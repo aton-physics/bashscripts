@@ -1,17 +1,15 @@
 #!/bin/bash
-#for (( filenumber=1; filenumber <= $1; filenumber++ ))
-#do
-filenumber=4
+for (( filenumber=1; filenumber <= $1; filenumber++ ))
+do
+echo "File $filenumber"
 filename="Trajectory$filenumber.data" #this is not a command line argument because I want the command line argument to be how many files I want to use.
-NumConfigs=100
+NumConfigs=1
 temperature=$(awk -v var=$filenumber 'NR==var{print $3}' input.data) #pull var'th line from input file to get the configuration parameters
 density=$(awk -v var=$filenumber 'NR==var{print $2}' input.data)
-echo "$temperature $density"
 N=50
-halfboxlength=$(echo "sqrt( $N / $density ) / 2" | bc) #bash doesn't have floating points. sad.
-echo "$halfboxlength"  
+halfboxlength=$(echo "sqrt( $N / $density ) / 2" | bc -l)
 t=0
-step=0.025
+step=0.1
 mkdir animation$filenumber
 START=1
 for (( value=0; value < NumConfigs; value++ ))
@@ -31,4 +29,4 @@ EOFMarker
 # rest of script, after gnuplot exits
 t=$(echo $t + $step | bc)
 done
-#done
+done
