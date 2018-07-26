@@ -3,7 +3,7 @@ for (( filenumber=1; filenumber <= $1; filenumber++ ))
 do
 echo "File $filenumber"
 filename="Trajectory$filenumber.data" #this is not a command line argument because I want the command line argument to be how many files I want to use.
-NumConfigs=1
+NumConfigs=1000
 temperature=$(awk -v var=$filenumber 'NR==var{print $3}' input.data) #pull var'th line from input file to get the configuration parameters
 density=$(awk -v var=$filenumber 'NR==var{print $2}' input.data)
 N=50
@@ -20,13 +20,14 @@ gnuplot.exe <<- EOFMarker
  set terminal pngcairo enhanced
  unset colorbox
  set size square
- #boxl2=$halfboxlength
- #set xrange [-boxl2:boxl2]
- #set yrange [-boxl2:boxl2]
+ boxl2=$halfboxlength
+ set xrange [-boxl2:boxl2]
+ set yrange [-boxl2:boxl2]
  set output sprintf("animation$filenumber/configuration%04.0f.png",$value)
  plot "<(sed -n '${START},${END}p' ${filename})" using 2:3:(0.5):1 with circles fill solid palette noti
 EOFMarker
 # rest of script, after gnuplot exits
 t=$(echo $t + $step | bc)
+START=$END
 done
 done
